@@ -135,6 +135,7 @@
   align-items: center;
   gap: 0.25rem;
   transition: all 0.2s ease;
+  margin-top: 20px;
 }
 
 .reg-back-btn:hover {

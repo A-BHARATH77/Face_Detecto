@@ -20,7 +20,7 @@
 
 .lback-button {
   left: 2rem;
-  background-color: #2d4ee1; /* Changed from black to green */
+  background-color: #4361ee; /* Changed from black to green */
   color: rgb(255, 255, 255); /* White text for contrast */
   border: none; /* Removed border since we're using solid color */
   padding: 0.5rem 1rem;
