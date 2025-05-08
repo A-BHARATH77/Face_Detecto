@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://admin:1234@cluster0.t6hfq.mongodb.net/face-reg?retryWrites=true&w=majority&appName=Cluster0', {
+mongoose.connect('mongodb://localhost:27017/face-reg', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 });

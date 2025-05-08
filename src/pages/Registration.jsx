@@ -50,7 +50,7 @@ const Registration = () => {
     try {
       const res = await axios.post('http://localhost:5000/api/register', { name, image: imageData });
       setSuccessMsg(res.data.message || "Registration successful!");
-      setTimeout(() => setSuccessMsg(''), 3000);
+      setTimeout(() => setSuccessMsg(''), 1000);
       setName('');
       setImageData(null);
     } catch (err) {

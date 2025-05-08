@@ -42,6 +42,7 @@ router.post('/register', async (req, res) => {
   
     try {
       const formData = new FormData();
+      console.log("inside")
       formData.append("image", req.file.buffer, {
         filename: "frame.jpg",
         contentType: req.file.mimetype,
