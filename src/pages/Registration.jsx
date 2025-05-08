@@ -87,13 +87,10 @@ const Registration = () => {
           {nameStatus}
         </p>
       </div>
-
       <button className="reg-btn" onClick={handleRegister}>Register</button>
-
       {successMsg && (
         <p className="reg-success-msg">✅ {successMsg}</p>
       )}
-
       <button className="reg-back-btn" onClick={() => navigate('/')}>← Back to Home</button>
     </div>
   );

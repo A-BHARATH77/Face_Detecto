@@ -52,7 +52,7 @@ const ChatBot = () => {
   return (
     <div className="chatbot-container">
       <div className="chatbot-header">
-        <button className="back-button" onClick={() => navigate('/')}>
+        <button className="cback-button" onClick={() => navigate('/')}>
           ← Back to Home
         </button>
         <h2>Face Recognition Assistant</h2>

@@ -127,7 +127,7 @@ function LiveStream() {
   return (
     <div className="live-stream-container">
       <div className="top-bar">
-        <button className="back-button" onClick={() => navigate('/')}>
+        <button className="lback-button" onClick={() => navigate('/')}>
           ← Back to Home
         </button>
         <h2>Live Face Recognition</h2>
