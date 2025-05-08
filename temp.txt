@@ -1,0 +1,70 @@
+fine without time and date 
+
+try:
+            # Connect to MongoDB
+            import ast
+
+            def execute_query(query: str):
+                query = query.strip()
+
+                try:
+                    # find().sort({...}).limit(n)
+                    if ".find()" in query and ".sort(" in query and ".limit(" in query:
+                        sort_arg = ast.literal_eval(query.split("sort(")[1].split(")")[0])
+                        limit_arg = int(query.split("limit(")[1].split(")")[0])
+                        result = collection.find().sort(list(sort_arg.items())).limit(limit_arg)
+                        return list(result)
+
+                    # find({...}).sort({...}).limit(n)
+                    elif ".find({" in query and ".sort(" in query and ".limit(" in query:
+                        find_part = query.split("find(")[1].split(")")[0]
+                        query_filter = ast.literal_eval(find_part)
+                        sort_arg = ast.literal_eval(query.split("sort(")[1].split(")")[0])
+                        limit_arg = int(query.split("limit(")[1].split(")")[0])
+                        result = collection.find(query_filter).sort(list(sort_arg.items())).limit(limit_arg)
+                        return list(result)
+
+                    # findOne({...}) or findOne({...}, {...})
+                    elif ".findOne(" in query:
+                        args = query.split("findOne(")[1].split(")")[0]
+                        parts = args.split("},")
+                        filter_arg = ast.literal_eval(parts[0] + '}')
+                        projection = ast.literal_eval(parts[1]) if len(parts) > 1 else None
+                        return collection.find_one(filter_arg, projection)
+
+                    # find({...}, {...})
+                    elif "find({" in query and "}, {" in query:
+                        parts = query.split("find(")[1].split(")")
+                        filter_part = parts[0].split("},")
+                        query_filter = ast.literal_eval(filter_part[0] + '}')
+                        projection = ast.literal_eval(filter_part[1]) if len(filter_part) > 1 else None
+                        result = collection.find(query_filter, projection)
+                        return list(result)
+
+                    # find({})
+                    elif "find({})" in query:
+                        return list(collection.find({}))
+
+                    # countDocuments({...})
+                    elif "countDocuments(" in query:
+                        count_arg = ast.literal_eval(query.split("countDocuments(")[1].split(")")[0])
+                        return collection.count_documents(count_arg)
+
+                    # find({}).count()
+                    elif "find({}).count()" in query:
+                        return collection.count_documents({})
+                    else:
+                        return "Unsupported query format."
+                except Exception as e:
+                    return f"Exception Error: {str(e)}"
+            results=execute_query(mongo_query_str)
+            def process_mongo_result(result):
+                if(type(result)== list):
+                    for i in results:
+                        i["embedding"]=0
+                return result
+            final_result=process_mongo_result(results)
+            print(final_result)
+        except Exception as e:
+            print("Error in mongo retreival:", e)
+            return "An error occurred while processing your request."
