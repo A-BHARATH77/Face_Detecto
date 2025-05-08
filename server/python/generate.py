@@ -60,7 +60,7 @@ Your response must follow these strict rules:
         response = chain.invoke(user_query)
         mongo_query_str = response.content
         print("Generated Mongo Query:", mongo_query_str)
-        mongo_client = MongoClient("mongodb://localhost:27017/")
+        mongo_client = MongoClient("mongodb+srv://admin:1234@cluster0.t6hfq.mongodb.net/face_reg?retryWrites=true&w=majority&appName=Cluster0")
         db = mongo_client["face_reg"]
         collection = db["users"]
         # step 3 mongo retrieval 
