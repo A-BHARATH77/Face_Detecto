@@ -56,10 +56,4 @@ React · Node.js · Express · MongoDB · Python · LangChain · FAISS · OpenAI
 
 ---
 
-## 🔧 Setup Instructions
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/A-BHARATH77/Face-Detecto
-cd Face-Detecto
