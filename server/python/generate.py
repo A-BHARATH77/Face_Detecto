@@ -3,10 +3,11 @@ import os
 from flask_cors import CORS
 from langchain.prompts import ChatPromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
-import json
+import re
 from pymongo import MongoClient
 import ast
 from langchain_google_genai import ChatGoogleGenerativeAI
+import datetime
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -65,13 +66,24 @@ Your response must follow these strict rules:
         # step 3 mongo retrieval 
         try:
             # Connect to MongoDB
-            import ast
+            def replace_date_patterns(query_str):
+                """Replace JavaScript ISODate(...) and new Date(...) with Python datetime.fromisoformat(...)."""
+                pattern = r'(ISODate|new Date)\s*[\'"]([^\'"]+)[\'"]\s*'
 
+                def replacer(match):
+                    label = match.group(1)
+                    date_str = match.group(2)
+                    dt_obj = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+                    return f"datetime.fromisoformat('{dt_obj.isoformat()}')"
+
+                return re.sub(pattern, replacer, query_str)
             def execute_query(query: str):
                 query = query.strip()
-
+                print("normal query ",query)
+                query = replace_date_patterns(query)
+                print("processed query",query)
                 try:
-                    # find().sort({...}).limit(n)
+                     # find().sort({...}).limit(n)
                     if ".find()" in query and ".sort(" in query and ".limit(" in query:
                         sort_arg = ast.literal_eval(query.split("sort(")[1].split(")")[0])
                         limit_arg = int(query.split("limit(")[1].split(")")[0])
@@ -81,7 +93,7 @@ Your response must follow these strict rules:
                     # find({...}).sort({...}).limit(n)
                     elif ".find({" in query and ".sort(" in query and ".limit(" in query:
                         find_part = query.split("find(")[1].split(")")[0]
-                        query_filter = ast.literal_eval(find_part)
+                        query_filter = eval(find_part)
                         sort_arg = ast.literal_eval(query.split("sort(")[1].split(")")[0])
                         limit_arg = int(query.split("limit(")[1].split(")")[0])
                         result = collection.find(query_filter).sort(list(sort_arg.items())).limit(limit_arg)
@@ -91,16 +103,16 @@ Your response must follow these strict rules:
                     elif ".findOne(" in query:
                         args = query.split("findOne(")[1].split(")")[0]
                         parts = args.split("},")
-                        filter_arg = ast.literal_eval(parts[0] + '}')
-                        projection = ast.literal_eval(parts[1]) if len(parts) > 1 else None
+                        filter_arg = eval(parts[0] + '}')
+                        projection = eval(parts[1]) if len(parts) > 1 else None
                         return collection.find_one(filter_arg, projection)
 
                     # find({...}, {...})
                     elif "find({" in query and "}, {" in query:
                         parts = query.split("find(")[1].split(")")
                         filter_part = parts[0].split("},")
-                        query_filter = ast.literal_eval(filter_part[0] + '}')
-                        projection = ast.literal_eval(filter_part[1]) if len(filter_part) > 1 else None
+                        query_filter = eval(filter_part[0] + '}')
+                        projection = eval(filter_part[1]) if len(filter_part) > 1 else None
                         result = collection.find(query_filter, projection)
                         return list(result)
 
@@ -110,21 +122,23 @@ Your response must follow these strict rules:
 
                     # countDocuments({...})
                     elif "countDocuments(" in query:
-                        count_arg = ast.literal_eval(query.split("countDocuments(")[1].split(")")[0])
+                        count_arg = eval(query.split("countDocuments(")[1].split(")")[0])
                         return collection.count_documents(count_arg)
 
                     # find({}).count()
                     elif "find({}).count()" in query:
                         return collection.count_documents({})
+
                     else:
                         return "Unsupported query format."
+
                 except Exception as e:
                     return f"Exception Error: {str(e)}"
             results=execute_query(mongo_query_str)
             def process_mongo_result(result):
-                if(type(result)== list):
-                    for i in results:
-                        i["embedding"]=0
+                if isinstance(result, list):
+                    for i in result:
+                        i["embedding"] = 0
                 return result
             final_result=process_mongo_result(results)
             print(final_result)
