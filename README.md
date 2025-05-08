@@ -60,4 +60,5 @@ React · Node.js · Express · MongoDB · Python · LangChain · FAISS · OpenAI
 
 [🎥 Click to Watch Demo](./Face-Detecto.mp4)
 
+[![Watch the Demo] (https://www.vidline.com/video/V02WHNKJ8N)]
 
