@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #e1f9fb;
+  background: #4361ee;
   padding: 1rem 2rem;
   border-radius: 12px;
   margin-bottom: 1.5rem;
@@ -20,8 +20,8 @@
 
 .lback-button {
   left: 2rem;
-  background-color: #d7d7d7; /* Changed from black to green */
-  color: rgb(0, 0, 0); /* White text for contrast */
+  background-color: #2d4ee1; /* Changed from black to green */
+  color: rgb(255, 255, 255); /* White text for contrast */
   border: none; /* Removed border since we're using solid color */
   padding: 0.5rem 1rem;
   font-size: 1rem;
@@ -37,7 +37,7 @@
 }
 
 .lback-button:hover {
-  background-color: #92faff; /* Slightly darker green on hover */
+  background-color: #2343d0; /* Slightly darker green on hover */
   transform: translateY(-1px); /* Subtle lift effect */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -108,7 +108,7 @@
   flex: 1;
   min-width: 300px;
   max-width: 400px;
-  background: #e1f9fb;
+  background: #4361ee;
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);

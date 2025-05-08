@@ -3,7 +3,6 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Registration.css';
-
 const Registration = () => {
   const webcamRef = useRef(null);
   const [name, setName] = useState('');
@@ -18,7 +17,6 @@ const Registration = () => {
       setNameStatus('');
       return;
     }
-
     setNameStatus('Checking... ⏳');
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -61,15 +59,12 @@ const Registration = () => {
   return (
     <div className="reg-container">
       <h2 className="reg-title">Register</h2>
-
       <Webcam
         ref={webcamRef}
         screenshotFormat="image/jpeg"
         className="reg-webcam"
       />
-
       <button className="reg-btn" onClick={capture}>Take Picture</button>
-
       <div className="reg-input-group">
         <input
           type="text"

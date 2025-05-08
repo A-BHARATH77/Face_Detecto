@@ -1,112 +1,159 @@
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #fdfdfd;
-    color: #222;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Container */
-  .reg-container {
-    display: flex;
+/* Registration.css */
+.reg-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.reg-title {
+  text-align: center;
+  color: #1e293b;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.reg-webcam {
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  border: 3px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.reg-webcam:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.capture-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.reg-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reg-btn:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.reg-btn:active {
+  transform: translateY(0);
+}
+
+.reg-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.reg-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.reg-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.reg-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+
+.reg-status-available {
+  color: #16a34a;
+  background-color: #dcfce7;
+}
+
+.reg-status-exists {
+  color: #dc2626;
+  background-color: #fee2e2;
+}
+
+.reg-success-msg {
+  text-align: center;
+  color: #16a34a;
+  font-weight: 600;
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background-color: #dcfce7;
+  border-radius: 8px;
+  animation: fadeIn 0.5s ease;
+}
+
+.reg-back-btn {
+  position: absolute;
+  left: 2rem;
+  top: 2rem;
+  background: none;
+  border: none;
+  color: #3b82f6;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.reg-back-btn:hover {
+  color: #2563eb;
+  transform: translateX(-2px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .capture-section {
     flex-direction: column;
-    align-items: center;
-    padding: 2rem;
+    gap: 1rem;
   }
   
-  /* Title */
-  .reg-title {
-    font-size: 2rem;
-    color: #2c3e50;
-    margin-bottom: 1rem;
-  }
-  
-  /* Webcam */
-  .reg-webcam {
-    border-radius: 12px;
-    border: 2px solid #ccc;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Buttons */
-  .reg-btn {
-    background-color: #051667;
-    color: white;
-    border: none;
-    padding: 0.7rem 1.4rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    margin: 0.5rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-  }
-  
-  .reg-btn:hover {
-    background-color: #0e9e6e;
-  }
-  
-  /* Back Button */
   .reg-back-btn {
-    background-color: #ffffff;
-    color: #69f5ff;
-    border: 2px solid #10b981;
-    padding: 0.6rem 1.2rem;
-    font-size: 1rem;
-    border-radius: 8px;
-    margin-top: 1rem;
-    cursor: pointer;
-    transition: 0.3s ease;
+    position: static;
+    margin-bottom: 1rem;
+    align-self: flex-start;
   }
-  
-  .reg-back-btn:hover {
-    background-color: #10b981;
-    color: white;
-  }
-  
-  /* Input Group */
-  .reg-input-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 1rem;
-  }
-  
-  /* Input Field */
-  .reg-input {
-    padding: 0.6rem 1rem;
-    width: 250px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease;
-  }
-  
-  .reg-input:focus {
-    border-color: #10b981;
-    outline: none;
-  }
-  
-  /* Status Text */
-  .reg-status {
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
-    color: #333;
-  }
-  
-  .reg-status-available {
-    color: green;
-  }
-  
-  .reg-status-exists {
-    color: red;
-  }
-  
-  /* Success Message */
-  .reg-success-msg {
-    color: green;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
+}

@@ -6,19 +6,18 @@ const axios = require("axios");
 const multer = require("multer");
 const upload = multer();
 const FormData = require("form-data");
-const activeControllers = new Set();
-
-
 // Check if name exists (for real-time check)
-router.get('/check-name', async (req, res) => {
-    const name = req.query.name;
-    try {
-      const exists = await User.exists({ name });
-      res.json({ exists: !!exists }); // ✅ this must return { exists: true/false }
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server error' });
-    }
+  router.get('/check-name', async (req, res) => {
+      const name = req.query.name;
+      console.log("Checking for name:", name);
+      try {
+        const exists = await User.exists({ name });
+        res.json({ exists: !!exists });
+        console.log("User exists?", exists); // ✅ this must return { exists: true/false }
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+      }
   });
 router.post('/register', async (req, res) => {
     const { name, image } = req.body;
