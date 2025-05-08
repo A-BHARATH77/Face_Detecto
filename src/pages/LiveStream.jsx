@@ -1,12 +1,14 @@
 import React, { useRef, useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import "./LiveStream.css";
+import { useNavigate } from 'react-router-dom'; 
 
 function App() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
   const [messages, setMessages] = useState([]);
-  const [dimensions, setDimensions] = useState({ width: 640, height: 480 });    
+  const [dimensions, setDimensions] = useState({ width: 640, height: 480 });  
+  const navigate = useNavigate();  
 
   // Set canvas dimensions to match webcam
   useEffect(() => {
@@ -135,6 +137,7 @@ function App() {
           <div className="msg-none">No faces detected yet...</div>
         )}
       </div>
+      <button onClick={() => navigate('/')}>← Back to Home</button>
     </div>
   );
 }
