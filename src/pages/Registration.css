@@ -53,6 +53,9 @@
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  margin: 50px;
+  margin-left: 220px;
 }
 
 .reg-btn:hover {
@@ -69,9 +72,9 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  max-width: 640px;
+  width: 500px;
   margin: 0 auto;
-  width: 100%;
+  width: 50%;
 }
 
 .reg-input {
