@@ -1,14 +1,25 @@
 import React, { useRef, useEffect, useState } from "react";
 import Webcam from "react-webcam";
 import "./LiveStream.css";
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 
-function App() {
+function LiveStream() {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const messagesEndRef = useRef(null);
   const [messages, setMessages] = useState([]);
-  const [dimensions, setDimensions] = useState({ width: 640, height: 480 });  
-  const navigate = useNavigate();  
+  const [dimensions, setDimensions] = useState({ width: 640, height: 480 });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const navigate = useNavigate();
+
+  // Auto-scroll messages to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Set canvas dimensions to match webcam
   useEffect(() => {
@@ -34,111 +45,142 @@ function App() {
   }, []);
 
   const captureAndRecognize = async () => {
-    if (
-      webcamRef.current &&
-      webcamRef.current.video &&
-      webcamRef.current.video.readyState === 4
-    ) {
-      try {
-        const video = webcamRef.current.video;
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+    if (!webcamRef.current?.video || isProcessing) return;
+    
+    setIsProcessing(true);
+    
+    try {
+      const video = webcamRef.current.video;
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
 
-        // Set canvas dimensions to match video
-        canvas.width = dimensions.width;
-        canvas.height = dimensions.height;
+      // Set canvas dimensions
+      canvas.width = dimensions.width;
+      canvas.height = dimensions.height;
 
-        // Draw the current video frame to canvas
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Draw video frame
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Get the image data as blob
-        canvas.toBlob(async (blob) => {
-          const formData = new FormData();
-          formData.append("image", blob, "frame.jpg");
-        
-          try {
-            const res = await fetch("http://localhost:5000/api/recognize", {
-              method: "POST",
-              body: formData,
-            });
-        
-            const data = await res.json();
-        
-            // Clear and redraw canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-            const newMessages = [];
-            data.results.forEach(({ name, box }) => {
-              ctx.strokeStyle = "lime";
-              ctx.lineWidth = 2;
-              ctx.strokeRect(box[0], box[1], box[2], box[3]);
-        
-              ctx.fillStyle = "lime";
-              ctx.fillRect(box[0], box[1] - 25, ctx.measureText(name).width + 10, 25);
-        
-              ctx.fillStyle = "black";
-              ctx.font = "16px Arial";
-              ctx.fillText(name, box[0] + 5, box[1] - 8);
-        
-              newMessages.push(
-                name === "Unknown"
-                  ? "⚠️ Unknown face detected."
-                  : `✅ Face recognized: ${name}`
-              );
-            });
-        
-            setMessages(newMessages);
-          } catch (err) {
-            console.error("❌ Recognition error:", err);
-            setMessages(["❌ Error processing face recognition"]);
-          }
-        }, "image/jpeg");
-      } catch (err) {
-        console.error("❌ Error in captureAndRecognize:", err);
-        setMessages(["❌ Error capturing image"]);
-      }
+      // Get image data
+      const blob = await new Promise(resolve => 
+        canvas.toBlob(resolve, "image/jpeg", 0.8)
+      );
+
+      const formData = new FormData();
+      formData.append("image", blob, "frame.jpg");
+
+      const res = await fetch("http://localhost:5000/api/recognize", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const newMessages = [];
+      data.results.forEach(({ name, box }) => {
+        // Draw bounding box
+        ctx.strokeStyle = name === "Unknown" ? "#ff3b30" : "#34c759";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(box[0], box[1], box[2], box[3]);
+
+        // Draw label background
+        ctx.fillStyle = name === "Unknown" ? "#ff3b30" : "#34c759";
+        const textWidth = ctx.measureText(name).width;
+        ctx.fillRect(box[0] - 1, box[1] - 30, textWidth + 20, 25);
+
+        // Draw label text
+        ctx.fillStyle = "white";
+        ctx.font = "bold 14px 'Inter', sans-serif";
+        ctx.fillText(name, box[0] + 8, box[1] - 10);
+
+        newMessages.push({
+          id: Date.now() + Math.random(),
+          text: name === "Unknown" 
+            ? `⚠️ Unknown face detected` 
+            : `✅ Recognized: ${name}`,
+          type: name === "Unknown" ? "unknown" : "known",
+          timestamp: new Date().toLocaleTimeString()
+        });
+      });
+
+      setMessages(prev => [...prev.slice(-5), ...newMessages]);
+    } catch (err) {
+      console.error("Recognition error:", err);
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        text: "❌ Error processing recognition",
+        type: "error",
+        timestamp: new Date().toLocaleTimeString()
+      }]);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   useEffect(() => {
-    const captureInterval = setInterval(captureAndRecognize, 100);
+    const captureInterval = setInterval(captureAndRecognize, 1500);
     return () => clearInterval(captureInterval);
   }, [dimensions]);
 
   return (
-    <div className="page-container">
-      <div className="webcam-container">
-        <Webcam
-          ref={webcamRef}
-          audio={false}
-          className="webcam"
-          screenshotFormat="image/jpeg"
-          videoConstraints={{
-            width: dimensions.width,
-            height: dimensions.height,
-            facingMode: "user",
-          }}
-        />
-        <canvas ref={canvasRef} className="canvas-overlay" />
+    <div className="live-stream-container">
+      <div className="top-bar">
+        <button className="back-button" onClick={() => navigate('/')}>
+          ← Back to Home
+        </button>
+        <h2>Live Face Recognition</h2>
       </div>
-  
-      <div className="messages-box" style={{ width: `${dimensions.width}px` }}>
-        {messages.length > 0 ? (
-          messages.map((msg, i) => (
-            <div
-              key={i}
-              className={msg.includes("Unknown") ? "msg-unknown" : "msg-known"}
-            >
-              {msg}
+
+      <div className="camera-section">
+        <div className="webcam-wrapper">
+          <Webcam
+            ref={webcamRef}
+            audio={false}
+            className="webcam"
+            screenshotFormat="image/jpeg"
+            videoConstraints={{
+              width: dimensions.width,
+              height: dimensions.height,
+              facingMode: "user",
+            }}
+          />
+          <canvas 
+            ref={canvasRef} 
+            className="canvas-overlay"
+            width={dimensions.width}
+            height={dimensions.height}
+          />
+          {isProcessing && (
+            <div className="processing-overlay">
+              <div className="processing-spinner"></div>
+              <span>Processing...</span>
             </div>
-          ))
-        ) : (
-          <div className="msg-none">No faces detected yet...</div>
-        )}
+          )}
+        </div>
+
+        <div className="recognition-results">
+          <h3>Recognition Log</h3>
+          <div className="messages-box">
+            {messages.length > 0 ? (
+              messages.map((msg) => (
+                <div key={msg.id} className={`message ${msg.type}`}>
+                  <span className="message-text">{msg.text}</span>
+                  <span className="message-time">{msg.timestamp}</span>
+                </div>
+              ))
+            ) : (
+              <div className="message empty">
+                No faces detected yet. Looking for faces...
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
       </div>
-      <button onClick={() => navigate('/')}>← Back to Home</button>
     </div>
   );
 }
-export default App;
+
+export default LiveStream;

@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // for back button
+import { useNavigate } from 'react-router-dom';
+import './Registration.css';
 
 const Registration = () => {
   const webcamRef = useRef(null);
@@ -12,7 +13,6 @@ const Registration = () => {
   const debounceRef = useRef(null);
   const navigate = useNavigate();
 
-  // Realtime name check with debounce
   useEffect(() => {
     if (!name.trim()) {
       setNameStatus('');
@@ -40,7 +40,7 @@ const Registration = () => {
   const capture = () => {
     const screenshot = webcamRef.current.getScreenshot();
     setImageData(screenshot);
-    alert("Picture captured"); // ✅ Simple alert for capture
+    alert("Picture captured");
   };
 
   const handleRegister = async () => {
@@ -50,8 +50,6 @@ const Registration = () => {
     try {
       const res = await axios.post('http://localhost:5000/api/register', { name, image: imageData });
       setSuccessMsg(res.data.message || "Registration successful!");
-
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccessMsg(''), 3000);
       setName('');
       setImageData(null);
@@ -61,34 +59,42 @@ const Registration = () => {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <Webcam ref={webcamRef} screenshotFormat="image/jpeg" />
-      <br />
-      <button onClick={capture}>Take Picture</button>
+    <div className="reg-container">
+      <h2 className="reg-title">Register</h2>
 
-      <div>
+      <Webcam
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        className="reg-webcam"
+      />
+
+      <button className="reg-btn" onClick={capture}>Take Picture</button>
+
+      <div className="reg-input-group">
         <input
           type="text"
           placeholder="Enter unique name"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="reg-input"
         />
-        <p style={{ color: nameStatus.includes("available") ? "green" : nameStatus.includes("exists") ? "red" : "black" }}>
+        <p
+          className={`reg-status ${
+            nameStatus.includes("available") ? "reg-status-available" :
+            nameStatus.includes("exists") ? "reg-status-exists" : ""
+          }`}
+        >
           {nameStatus}
         </p>
       </div>
 
-      <button onClick={handleRegister}>Register</button>
+      <button className="reg-btn" onClick={handleRegister}>Register</button>
 
       {successMsg && (
-        <p style={{ color: 'green', marginTop: '10px', fontWeight: 'bold' }}>
-          ✅ {successMsg}
-        </p>
+        <p className="reg-success-msg">✅ {successMsg}</p>
       )}
 
-      <br />
-      <button onClick={() => navigate('/')}>← Back to Home</button>
+      <button className="reg-back-btn" onClick={() => navigate('/')}>← Back to Home</button>
     </div>
   );
 };

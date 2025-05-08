@@ -1,0 +1,112 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #fdfdfd;
+    color: #222;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Container */
+  .reg-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  
+  /* Title */
+  .reg-title {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+  }
+  
+  /* Webcam */
+  .reg-webcam {
+    border-radius: 12px;
+    border: 2px solid #ccc;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Buttons */
+  .reg-btn {
+    background-color: #051667;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.4rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+  }
+  
+  .reg-btn:hover {
+    background-color: #0e9e6e;
+  }
+  
+  /* Back Button */
+  .reg-back-btn {
+    background-color: #ffffff;
+    color: #69f5ff;
+    border: 2px solid #69f5ff;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  
+  .reg-back-btn:hover {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  /* Input Group */
+  .reg-input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  /* Input Field */
+  .reg-input {
+    padding: 0.6rem 1rem;
+    width: 250px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+  }
+  
+  .reg-input:focus {
+    border-color: #10b981;
+    outline: none;
+  }
+  
+  /* Status Text */
+  .reg-status {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: #333;
+  }
+  
+  .reg-status-available {
+    color: green;
+  }
+  
+  .reg-status-exists {
+    color: red;
+  }
+  
+  /* Success Message */
+  .reg-success-msg {
+    color: green;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  

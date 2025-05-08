@@ -1,19 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import './ChatBot.css';
 
 const ChatBot = () => {
   const [message, setMessage] = useState('');
-  const [conversation, setConversation] = useState([]);
+  const [conversation, setConversation] = useState([
+    { sender: 'bot', text: 'Hello! I can answer questions about registered faces. Ask me anything!' }
+  ]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [conversation]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) return;
 
     setIsLoading(true);
-    setConversation(prev => [...prev, { sender: 'user', text: message }]);
+    const userMessage = { sender: 'user', text: message };
+    setConversation(prev => [...prev, userMessage]);
+    setMessage('');
     
     try {
       const response = await axios.post('http://localhost:5000/api/chat', {
@@ -28,71 +42,72 @@ const ChatBot = () => {
       console.error('Error:', error);
       setConversation(prev => [...prev, { 
         sender: 'bot', 
-        text: 'Sorry, the service is temporarily unavailable.' 
+        text: 'Sorry, I encountered an error. Please try again later.' 
       }]);
     } finally {
       setIsLoading(false);
-      setMessage('');
     }
   };
 
   return (
-    <div className="chat-container">
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <div style={{ 
-        height: '400px', 
-        border: '1px solid #ccc', 
-        overflowY: 'auto', 
-        marginBottom: '10px',
-        padding: '10px'
-      }}>
+    <div className="chatbot-container">
+      <div className="chatbot-header">
+        <button className="back-button" onClick={() => navigate('/')}>
+          ← Back to Home
+        </button>
+        <h2>Face Recognition Assistant</h2>
+      </div>
+
+      <div className="chatbot-messages">
         {conversation.map((msg, index) => (
-          <div key={index} style={{ 
-            textAlign: msg.sender === 'user' ? 'right' : 'left',
-            margin: '5px 0',
-            padding: '8px',
-            backgroundColor: msg.sender === 'user' ? '#e3f2fd' : '#f5f5f5',
-            borderRadius: '10px'
-          }}>
-            {msg.text}
+          <div 
+            key={index} 
+            className={`message ${msg.sender}`}
+          >
+            <div className="message-content">
+              {msg.text}
+            </div>
+            <div className="message-time">
+              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
         ))}
-        {isLoading && <div style={{ textAlign: 'left' }}>Thinking...</div>}
+        {isLoading && (
+          <div className="message bot">
+            <div className="message-content">
+              <div className="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSubmit} style={{ display: 'flex' }}>
+
+      <form className="chatbot-input-form" onSubmit={handleSubmit}>
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your message..."
+          placeholder="Ask about registered faces..."
           disabled={isLoading}
-          style={{ 
-            flex: 1, 
-            padding: '10px', 
-            marginRight: '10px',
-            borderRadius: '4px',
-            border: '1px solid #ccc'
-          }}
+          autoFocus
         />
         <button 
           type="submit" 
           disabled={isLoading || !message.trim()}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
+          className="send-button"
         >
-          Send
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M22 2L11 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </button>
       </form>
-    </div>
-    <button onClick={() => navigate('/')}>← Back to Home</button>
     </div>
   );
 };
 
-export default ChatBot;
+export default ChatBot; 
