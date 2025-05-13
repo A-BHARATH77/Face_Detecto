@@ -12,7 +12,6 @@ function LiveStream() {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  // Auto-scroll messages to bottom
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -21,7 +20,6 @@ function LiveStream() {
     scrollToBottom();
   }, [messages]);
 
-  // Set canvas dimensions to match webcam
   useEffect(() => {
     const handleResize = () => {
       if (webcamRef.current?.video) {
@@ -54,14 +52,11 @@ function LiveStream() {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
 
-      // Set canvas dimensions
       canvas.width = dimensions.width;
       canvas.height = dimensions.height;
 
-      // Draw video frame
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Get image data
       const blob = await new Promise(resolve => 
         canvas.toBlob(resolve, "image/jpeg", 0.8)
       );
@@ -80,17 +75,17 @@ function LiveStream() {
 
       const newMessages = [];
       data.results.forEach(({ name, box }) => {
-        // Draw bounding box
+        //  bounding box
         ctx.strokeStyle = name === "Unknown" ? "#ff3b30" : "#34c759";
         ctx.lineWidth = 3;
         ctx.strokeRect(box[0], box[1], box[2], box[3]);
 
-        // Draw label background
+        //  label background
         ctx.fillStyle = name === "Unknown" ? "#ff3b30" : "#34c759";
         const textWidth = ctx.measureText(name).width;
         ctx.fillRect(box[0] - 1, box[1] - 30, textWidth + 20, 25);
 
-        // Draw label text
+        //  label text
         ctx.fillStyle = "white";
         ctx.font = "bold 14px 'Inter', sans-serif";
         ctx.fillText(name, box[0] + 8, box[1] - 10);

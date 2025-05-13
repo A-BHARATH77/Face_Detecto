@@ -8,27 +8,41 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 
-# Connect to MongoDB
 #mongo_client = MongoClient("mongodb+srv://admin:1234@cluster0.t6hfq.mongodb.net/face_reg?retryWrites=true&w=majority&appName=Cluster0")
 mongo_client = MongoClient("mongodb://localhost:27017/")
 db = mongo_client["face_reg"]
 collection = db["users"]
 
-# Load embeddings and names from MongoDB
 names = []
 embeddings = []
+index=0
 
 for user in collection.find():
     names.append(user["name"])
     embeddings.append(user["embedding"])
+def norm():
+    global index
+    embedding_matrix = np.array(embeddings).astype("float32")
+    faiss.normalize_L2(embedding_matrix)
+    index = faiss.IndexFlatIP(embedding_matrix.shape[1])  # Cosine similarity
+    index.add(embedding_matrix)
+norm()
 
-# Convert to numpy array and normalize
-embedding_matrix = np.array(embeddings).astype("float32")
-faiss.normalize_L2(embedding_matrix)
+@app.route("/update", methods=["POST"])
+def update():
+    try:
+        print("Inside the update route")
+        data = request.get_json()
+        name = data["name"]
+        embedding = data["embedding"]
 
-# Create FAISS index
-index = faiss.IndexFlatIP(embedding_matrix.shape[1])  # Cosine similarity
-index.add(embedding_matrix)
+        names.append(name)
+        embeddings.append(embedding)
+        norm()
+        return jsonify({"message": "User added successfully"})
+    except Exception as e:
+        print("Error in /update route:", e)
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/recognize", methods=["POST"])
 def recognize():

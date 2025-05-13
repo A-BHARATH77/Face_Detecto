@@ -26,14 +26,14 @@ function Home() {
       tech: "React + Node.js + Python (LangChain, FAISS, OpenAI)",
       onClick: () => navigate('/chat')
     }
-  ];
+    ];
 
   return (
     <div className="home-container">
       <div className="header">
         <h1>Face Recognition System</h1>
         <p>A browser-based platform with real-time face recognition and AI-powered Q&A using RAG technology.</p>
-      </div>
+      </div>  
 
       <div className="features-grid">
         {features.map((feature, index) => (

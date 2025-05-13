@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 import os
 from flask_cors import CORS
-from langchain.prompts import ChatPromptTemplate
-from langchain.schema.runnable import RunnablePassthrough
+from langchain.prompts import ChatPromptTemplate 
+from langchain.schema.runnable import RunnablePassthrough #real time input 
 import re
 from pymongo import MongoClient
 import ast

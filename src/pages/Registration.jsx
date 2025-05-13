@@ -3,6 +3,7 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './Registration.css';
+
 const Registration = () => {
   const webcamRef = useRef(null);
   const [name, setName] = useState('');
@@ -48,7 +49,7 @@ const Registration = () => {
     try {
       const res = await axios.post('http://localhost:5000/api/register', { name, image: imageData });
       setSuccessMsg(res.data.message || "Registration successful!");
-      setTimeout(() => setSuccessMsg(''), 1000);
+      setTimeout(() => setSuccessMsg(''), 5000);
       setName('');
       setImageData(null);
     } catch (err) {
